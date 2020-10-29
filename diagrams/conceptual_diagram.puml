@@ -1,0 +1,60 @@
+@startuml
+entity user {
+  * id
+  --
+  * username
+  * password_hash
+  * last_login
+  * galleries
+  * comments
+  * created_at
+}
+
+entity gallery {
+  * id
+  --
+  * user_id
+  * name
+  * description
+  * images
+  * last_edited
+  * created_at
+}
+
+entity image {
+  * id
+  --
+  * gallery_id
+  * reference
+  * description
+  * comments
+  * tags
+  * created_at
+}
+
+entity comment{
+  * id
+  --
+  * image_id
+  * user_id
+  * content
+  * created_at
+    title
+}
+
+entity tag {
+  * id
+  --
+  * name
+  * created_at
+} 
+
+
+user    --|{ gallery
+user    --|{ comment
+gallery --|{ image
+image   --|{ comment
+image }|--|{ tag
+
+
+@enduml
