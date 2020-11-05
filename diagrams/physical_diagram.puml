@@ -57,7 +57,14 @@ entity comment{
   * user_id: unsigned big int
   * content: text(1024)
   * created_at: timestamp
-    title: text(32)
+  * title: text(32)
+}
+
+entity image_tag{
+  * id(composite_key[image_id, tag_id])
+  --
+  *image_id unsigned bigint
+  *tag_id unsigned bigint
 }
 
 entity tag {
@@ -72,7 +79,8 @@ user    --|{ gallery
 user    --|{ comment
 gallery --|{ image
 image   --|{ comment
-image }|--|{ tag
+image }|-- image_tag
+tag }|-- image_tag
 
 user }|-- group
 group --|{ group_permission
