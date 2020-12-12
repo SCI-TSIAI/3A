@@ -1,6 +1,8 @@
 <?php namespace App\User\Entity;
 
-class UserEntity {
+use App\Database\Entity\Entity;
+
+class UserEntity extends Entity {
 
     private $id;
     private $group_id;
@@ -14,13 +16,6 @@ class UserEntity {
      */
     public function getId() {
         return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id) {
-        $this->id = $id;
     }
 
     /**
