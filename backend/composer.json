@@ -13,6 +13,7 @@
         }
     ],
     "require": {
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "bramus/router": "~1.5"
     }
 }
