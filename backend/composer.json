@@ -14,6 +14,8 @@
     ],
     "require": {
         "ext-pdo": "*",
-        "bramus/router": "~1.5"
+        "bramus/router": "~1.5",
+        "zeptech/annotations": "1.1.0",
+        "haydenpierce/class-finder": "^0.4.3"
     }
 }
