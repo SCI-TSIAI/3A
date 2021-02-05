@@ -1,13 +1,14 @@
-<?php namespace App\User\Entity;
+<?php
 
-use App\Database\Entity\Entity;
 
-class UserEntity extends Entity {
+namespace App\User\Model;
+
+
+class UserModel {
 
     private $id;
     private $group_id;
     private $username;
-    private $password_hash;
     private $last_login;
     private $created_at;
 
@@ -19,6 +20,15 @@ class UserEntity extends Entity {
     }
 
     /**
+     * @param mixed $id
+     * @return UserModel
+     */
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function getGroupId() {
@@ -27,6 +37,7 @@ class UserEntity extends Entity {
 
     /**
      * @param mixed $group_id
+     * @return UserModel
      */
     public function setGroupId($group_id) {
         $this->group_id = $group_id;
@@ -42,24 +53,10 @@ class UserEntity extends Entity {
 
     /**
      * @param mixed $username
+     * @return UserModel
      */
     public function setUsername($username) {
         $this->username = $username;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPasswordHash() {
-        return $this->password_hash;
-    }
-
-    /**
-     * @param mixed $password_hash
-     */
-    public function setPasswordHash($password_hash) {
-        $this->password_hash = $password_hash;
         return $this;
     }
 
@@ -72,6 +69,7 @@ class UserEntity extends Entity {
 
     /**
      * @param mixed $last_login
+     * @return UserModel
      */
     public function setLastLogin($last_login) {
         $this->last_login = $last_login;
@@ -87,9 +85,11 @@ class UserEntity extends Entity {
 
     /**
      * @param mixed $created_at
+     * @return UserModel
      */
     public function setCreatedAt($created_at) {
         $this->created_at = $created_at;
         return $this;
     }
+
 }

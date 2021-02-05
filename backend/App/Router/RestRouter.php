@@ -12,7 +12,7 @@ class RestRouter {
     const ACTION_ANNOTATION_NAME = "Action";
     const PATH_PARAMETER_NAME = "path";
     const METHOD_PARAMETER_NAME = "method";
-    const MAIN_NAMESPACE = 'App';
+    const MAIN_NAMESPACE = "App";
 
     private static $router;
 
@@ -70,7 +70,7 @@ class RestRouter {
 
         $actionMethod = strtoupper($methodAnnotations[self::ACTION_ANNOTATION_NAME][self::METHOD_PARAMETER_NAME]);
 
-        $actionPath = $methodAnnotations[self::PATH_PARAMETER_NAME];
+        $actionPath = $methodAnnotations[self::ACTION_ANNOTATION_NAME][self::PATH_PARAMETER_NAME];
 
         $path = !empty($actionPath) ? $controllerPath . $actionPath : $controllerPath;
 

@@ -1,8 +1,11 @@
 <?php
 
+namespace App\User\Controller;
 
-namespace App\Controller;
-
+use App\Router\RestBodyReader;
+use App\Serializer\JsonSerializer;
+use App\User\Model\AddUserRequest;
+use App\User\Service\UserService;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use ReflectionClass;
@@ -12,6 +15,17 @@ use zpt\anno\Annotations;
  * @Controller(path="/user")
  */
 class UserController {
+
+    private $userService;
+
+    /**
+     * UserController constructor.
+     * @param $userService
+     */
+    public function __construct() {
+        $this->userService = new UserService();
+    }
+
 
     /**
      * @Action(method="GET")
@@ -24,16 +38,22 @@ class UserController {
      * @Action(method="POST")
      */
     public function addUser() {
-        $request = json_decode(file_get_contents('php://input'));
 
-        echo json_encode(array("message" => "Added user successfully!"));
+        /** @var AddUserRequest $request */
+        $request = RestBodyReader::readBody(AddUserRequest::class);
+
+        $userEntity = $this->userService->createUser($request);
+
+        echo JsonSerializer::getInstance()->serialize($userEntity, 'json');
     }
 
     /**
      * @Action(method="GET", path="/{id}")
      */
     public function getUser($id) {
-        echo sprintf("Obtained user with id: %s", array($id));
+        $userModel = $this->userService->getUser($id);
+
+        echo JsonSerializer::getInstance()->serialize($userModel, 'json');
     }
 
     /**

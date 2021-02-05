@@ -7,6 +7,8 @@ namespace App\Database\Repository;
 use App\Database\DatabaseConnector;
 use App\Database\Entity\Entity;
 use App\Helpers\ReflectionUtils;
+use App\Serializer\JsonSerializer;
+use App\User\Entity\UserEntity;
 use PDO;
 
 abstract class Repository {
