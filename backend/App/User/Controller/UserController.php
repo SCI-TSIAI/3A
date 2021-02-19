@@ -4,7 +4,7 @@ namespace App\User\Controller;
 
 use App\Router\RestBodyReader;
 use App\Serializer\JsonSerializer;
-use App\User\Model\AddUserRequest;
+use App\User\Model\UserRequest;
 use App\User\Service\UserService;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -39,8 +39,8 @@ class UserController {
      */
     public function addUser() {
 
-        /** @var AddUserRequest $request */
-        $request = RestBodyReader::readBody(AddUserRequest::class);
+        /** @var UserRequest $request */
+        $request = RestBodyReader::readBody(UserRequest::class);
 
         $userEntity = $this->userService->createUser($request);
 
@@ -48,6 +48,7 @@ class UserController {
     }
 
     /**
+     * @Authorized
      * @Action(method="GET", path="/{id}")
      */
     public function getUser($id) {

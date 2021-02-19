@@ -1,5 +1,7 @@
 <?php namespace App\Router;
 
+use App\Helpers\HttpHeadersHelper;
+use App\Helpers\JwtHelper;
 use App\Helpers\ReflectionUtils;
 use Bramus\Router\Router;
 use HaydenPierce\ClassFinder\ClassFinder;
@@ -10,6 +12,7 @@ class RestRouter {
 
     const CONTROLLER_ANNOTATION_NAME = "Controller";
     const ACTION_ANNOTATION_NAME = "Action";
+    const AUTHORIZED_ANNOTATION_NAME = "Authorized";
     const PATH_PARAMETER_NAME = "path";
     const METHOD_PARAMETER_NAME = "method";
     const MAIN_NAMESPACE = "App";
@@ -74,6 +77,10 @@ class RestRouter {
 
         $path = !empty($actionPath) ? $controllerPath . $actionPath : $controllerPath;
 
+        if ($methodAnnotations->hasAnnotation(self::AUTHORIZED_ANNOTATION_NAME)) {
+            self::registerAuthorization($actionMethod, $path);
+        }
+
         switch ($actionMethod) {
             case "GET":
                 self::$router->get($path, ReflectionUtils::getFullMethodIdentifier($methodReflector));
@@ -98,5 +105,18 @@ class RestRouter {
         foreach ($classes as $class) {
             self::registerRoutes($class);
         }
+    }
+
+    private static function registerAuthorization($actionMethod, $path) {
+        self::$router->before($actionMethod, $path, function () {
+            $bearerToken = HttpHeadersHelper::getTokenForRequest();
+
+            $isTokenValid = JwtHelper::verifyToken($bearerToken);
+
+            if (!$isTokenValid) {
+                http_response_code(401);
+                die();
+            }
+        });
     }
 }

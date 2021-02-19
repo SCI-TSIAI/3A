@@ -4,7 +4,7 @@
 namespace App\User\Model;
 
 
-class AddUserRequest {
+class UserRequest {
 
     private $username;
     private $password;
@@ -18,7 +18,7 @@ class AddUserRequest {
 
     /**
      * @param mixed $username
-     * @return AddUserRequest
+     * @return UserRequest
      */
     public function setUsername($username) {
         $this->username = $username;
@@ -34,7 +34,7 @@ class AddUserRequest {
 
     /**
      * @param mixed $password
-     * @return AddUserRequest
+     * @return UserRequest
      */
     public function setPassword($password) {
         $this->password = $password;

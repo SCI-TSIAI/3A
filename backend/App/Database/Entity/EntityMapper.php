@@ -12,7 +12,7 @@ class EntityMapper {
     const DATA_FORMAT = 'json';
 
     /**
-     * @param UserEntity $entity
+     * @param Entity $entity
      * @param $classReference
      * @return object
      */
