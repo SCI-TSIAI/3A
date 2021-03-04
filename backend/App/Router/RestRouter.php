@@ -1,6 +1,7 @@
 <?php namespace App\Router;
 
-use App\User\Controller\UserController;
+use App\Helpers\HttpHeadersHelper;
+use App\Helpers\JwtHelper;
 use App\Helpers\ReflectionUtils;
 use Bramus\Router\Router;
 use HaydenPierce\ClassFinder\ClassFinder;
@@ -9,11 +10,12 @@ use zpt\anno\Annotations;
 
 class RestRouter {
 
-    const MAIN_NAMESPACE = "App";
     const CONTROLLER_ANNOTATION_NAME = "Controller";
     const ACTION_ANNOTATION_NAME = "Action";
+    const AUTHORIZED_ANNOTATION_NAME = "Authorized";
     const PATH_PARAMETER_NAME = "path";
     const METHOD_PARAMETER_NAME = "method";
+    const MAIN_NAMESPACE = "App";
 
     private static $router;
 
@@ -93,6 +95,10 @@ class RestRouter {
             : null;
 
         $path = !empty($actionPath) ? $controllerPath . $actionPath : $controllerPath;
+
+        if ($methodAnnotations->hasAnnotation(self::AUTHORIZED_ANNOTATION_NAME)) {
+            self::registerAuthorization($actionMethod, $path);
+        }
 
         switch ($actionMethod) {
             case "GET":
