@@ -8,9 +8,12 @@
 //$result = $query->fetch();
 
 
-use App\Main;
+//Przebieg danych w systemie:
+// Żądanie->Controller->Service(Services)->Repository->DB->Repository->Service(Services)->Controller->Odpowiedź
 
 require __DIR__ . '/vendor/autoload.php';
+
+use App\Main;
 
 $mainClass = new Main();
 

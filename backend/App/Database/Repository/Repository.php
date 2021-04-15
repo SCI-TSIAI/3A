@@ -4,6 +4,7 @@
 namespace App\Database\Repository;
 
 
+
 use App\Database\DatabaseConnector;
 use App\Database\Entity\Entity;
 use App\Helpers\ReflectionUtils;
@@ -23,7 +24,7 @@ abstract class Repository {
      * @return Entity
      */
     public function getById($id) {
-        $query = $this->prepare("Select * from " . $this->getTableName() . " where id=:id");
+        $query = $this->prepare("Select * from `" . $this->getTableName() . "` where id=:id");
 
         $query->execute(array(
             ":id" => $id
@@ -44,11 +45,22 @@ abstract class Repository {
         if (empty($object->getId())) {
             $result = $this->performSave($object);
         } else {
-            //TODO implement update method.
             $result = $this->performUpdate($object);
         }
 
         return $result;
+    }
+
+    public function delete($id) {
+        $query = $this->prepare("Delete from `" . $this->getTableName() . "` where id=:id");
+
+        $query->execute(array(":id" => $id));
+
+        return $query->rowCount();
+    }
+
+    public function deleteEntity(Entity $entity) {
+        return $this->delete($entity->getId());
     }
 
     protected function prepare($statement) {
@@ -78,7 +90,7 @@ abstract class Repository {
         $fieldPlaceholders = self::addPrefixToArrayKeys($fields, ":");
         $fieldPlaceholdersString = join(", ", array_keys($fieldPlaceholders));
 
-        $sql = "INSERT INTO " . $this->getTableName() . "($fieldNamesString) VALUES ($fieldPlaceholdersString)";
+        $sql = "INSERT INTO `" . $this->getTableName() . "`($fieldNamesString) VALUES ($fieldPlaceholdersString)";
         $stmt = $this->databaseConnection->prepare($sql);
 
         foreach ($fieldPlaceholders as $key => $value) {
@@ -97,6 +109,40 @@ abstract class Repository {
         }
 
         return $this->getById($this->databaseConnection->lastInsertId());
+    }
+
+    private function performUpdate(Entity $entity) {
+        $fields = ReflectionUtils::getObjectPrivateFields($entity);
+        $pairsString = "";
+        foreach ($fields as $key => $value) {
+            $pairsString .= $key . "=:" . $key . ", ";
+        }
+
+        $pairsString = rtrim($pairsString, ", ");
+
+        $sql = "UPDATE `" . $this->getTableName() . "` SET " . $pairsString . " where id=:id";
+        $stmt = $this->databaseConnection->prepare($sql);
+
+        $fieldPlaceholders = self::addPrefixToArrayKeys($fields, ":");
+
+        foreach ($fieldPlaceholders as $key => $value) {
+            if (is_string($value)) {
+                $stmt->bindValue($key, $value, PDO::PARAM_STR);
+            } else {
+                $stmt->bindValue($key, $value);
+            }
+        }
+
+        $stmt->bindValue(":id", $entity->getId());
+
+        try {
+            $stmt->execute();
+        } catch (\PDOException $e) {
+            //TODO save it to logfile.
+            return null;
+        }
+
+        return $this->getById($entity->getId());
     }
 
     private static function addPrefixToArrayKeys($array, $prefix) {

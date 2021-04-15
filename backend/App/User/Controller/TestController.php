@@ -17,7 +17,6 @@ use zpt\anno\Annotations;
 class TestController {
 
     /**
-     * @Authorized(permission="test_action_permission")
      * @Action(method="GET")
      */
     public function testAction() {

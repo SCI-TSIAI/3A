@@ -16,7 +16,12 @@ class UserRepository extends Repository {
         return "user";
     }
 
-    public function isUserWithPasswordExists($username, $password) {
+    /**
+     * @param $username
+     * @param $password
+     * @return UserEntity | bool
+     */
+    public function getUserByUsernameAndPassword($username, $password) {
         $query = $this->prepare("Select * from " . $this->getTableName() . " where username=:username and password_hash=:password_hash");
 
         $query->execute(array(
@@ -24,6 +29,6 @@ class UserRepository extends Repository {
             ":password_hash" => sha1($password)
         ));
 
-        return $query->rowCount() > 0;
+        return $query->fetch();
     }
 }
