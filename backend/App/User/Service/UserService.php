@@ -10,63 +10,71 @@ use App\Helpers\Model\TokenObject;
 use App\Helpers\ObjectMapper;
 use App\Serializer\JsonSerializer;
 use App\User\Entity\UserEntity;
+use App\User\Exception\UserNotFoundException;
 use App\User\Model\UserRequest;
 use App\User\Model\UserModel;
 use App\User\Repository\UserRepository;
 
 class UserService {
 
-    const USER_GROUP_ID = 1;
+  const USER_GROUP_ID = 1;
 
-    private $userRepository;
+  private $userRepository;
 
-    /**
-     * UserService constructor.
-     */
-    public function __construct() {
-        $this->userRepository = new UserRepository();
+  /**
+   * UserService constructor.
+   */
+  public function __construct() {
+    $this->userRepository = new UserRepository();
+  }
+
+  public function createUser(UserRequest $request) {
+
+    $userEntity = new UserEntity();
+
+    $userEntity->setUsername($request->getUsername())
+      ->setPasswordHash(sha1($request->getPassword()))
+      ->setGroupId(self::USER_GROUP_ID);
+
+    return ObjectMapper::map(
+      $this->userRepository->save($userEntity),
+      UserModel::class
+    );
+  }
+
+  /**
+   * @param $id
+   * @return object
+   * @throws UserNotFoundException
+   */
+  public function getUser($id) {
+    $userEntity = $this->userRepository->getById($id);
+
+    if (empty($userEntity)) {
+      throw new UserNotFoundException();
     }
 
-    public function createUser(UserRequest $request) {
+    return ObjectMapper::map(
+      $userEntity,
+      UserModel::class
+    );
+  }
 
-        $userEntity = new UserEntity();
+  public function getAuthenticatedUser($username, $password) {
+    return $this->userRepository->getUserByUsernameAndPassword($username, $password);
+  }
 
-        $userEntity->setUsername($request->getUsername())
-            ->setPasswordHash(sha1($request->getPassword()))
-            ->setGroupId(self::USER_GROUP_ID);
+  public function deleteUser($id, TokenObject $tokenObject) {
+    //TODO Later when we change $userId to user object from token, check that user is in admin group.
 
-        return ObjectMapper::map(
-          $this->userRepository->save($userEntity),
-          UserModel::class
-        );
+    if ($id !== $tokenObject->getUserId()) {
+      throw new \Exception("User does not have access to given resource");
     }
 
-    /**
-     * @param $id
-     * @return object
-     */
-    public function getUser($id) {
-        return ObjectMapper::map(
-            $this->userRepository->getById($id),
-            UserModel::class
-        );
+    $deletedRowsCount = $this->userRepository->delete($id);
+
+    if ($deletedRowsCount == 0) {
+      throw new \Exception(sprintf("Failed user deletion with id: %d", $id));
     }
-
-    public function getAuthenticatedUser($username, $password) {
-        return $this->userRepository->getUserByUsernameAndPassword($username, $password);
-    }
-
-    public function deleteUser($id, TokenObject $tokenObject) {
-        //TODO Later when we change $userId to user object from token, check that user is in admin group.
-
-        if ($id !== $tokenObject->getUserId()) {
-            throw new \Exception("User does not have access to given resource");
-        }
-
-        $deletedRowsCount = $this->userRepository->delete($id);
-
-        if ($deletedRowsCount == 0) {
-            throw new \Exception(sprintf("Failed user deletion with id: %d", $id));
-        }
-    }
+  }
 }

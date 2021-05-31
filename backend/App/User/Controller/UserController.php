@@ -54,6 +54,7 @@ class UserController {
   /**
    *
    * @Action(method="GET", path="/{id}")
+   * @throws \App\User\Exception\UserNotFoundException
    */
   public function getUser($id) {
     $userModel = $this->userService->getUser($id);
