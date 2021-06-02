@@ -48,6 +48,7 @@ class UserService {
    * @throws UserNotFoundException
    */
   public function getUser($id) {
+
     $userEntity = $this->userRepository->getById($id);
 
     if (empty($userEntity)) {
